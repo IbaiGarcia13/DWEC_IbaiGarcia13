@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Conversor de código morse</title>
+    <style>
+        body { max-width: 48rem; margin: 2rem auto; padding: 0 1rem; font: 1rem/1.5 sans-serif; }
+        button { padding: 0.6rem 1rem; }
+        #resultado { white-space: pre-wrap; overflow-wrap: anywhere; }
+    </style>
+</head>
+<body>
+    <h1>Conversor de código morse</h1>
+    <p>Escribe texto o código morse. Se detecta el formato automáticamente.</p>
+    <p>En morse usa un espacio entre letras y dos entre palabras. Se aceptan los signos - y — como raya.</p>
+    <button id="convertir" type="button">Introducir texto</button>
+    <p id="resultado" aria-live="polite">Pulsa el botón para empezar.</p>
+
+    <script>
+        const morse = {
+            //LETRAS
+            A: ".-", 
+            B: "-...", 
+            C: "-.-.", 
+            D: "-..", 
+            E: ".", 
+            F: "..-.",
+            G: "--.", 
+            H: "....", 
+            I: "..", 
+            J: ".---", 
+            K: "-.-", 
+            L: ".-..",
+            M: "--", 
+            N: "-.", 
+            Ñ: "--.--", 
+            O: "---", 
+            P: ".--.", 
+            Q: "--.-",
+            R: ".-.", 
+            S: "...", 
+            T: "-", 
+            U: "..-", 
+            V: "...-", 
+            W: ".--",
+            X: "-..-", 
+            Y: "-.--", 
+            Z: "--..",
+            //NÚMEROS
+            0: "-----", 
+            1: ".----", 
+            2: "..---", 
+            3: "...--", 
+            4: "....-",
+            5: ".....", 
+            6: "-....", 
+            7: "--...", 
+            8: "---..", 
+            9: "----.",
+            //SÍMBOLOS
+            ".": ".-.-.-", 
+            ",": "--..--", 
+            "?": "..--..", 
+            "'": ".----.",
+            "!": "-.-.--", 
+            "/": "-..-.", 
+            "(": "-.--.", 
+            ")": "-.--.-",
+            "&": ".-...", 
+            ":": "---...", 
+            ";": "-.-.-.", 
+            "=": "-...-",
+            "+": ".-.-.", 
+            "-": "-....-", 
+            "_": "..--.-", 
+            '"': ".-..-.",
+            "$": "...-..-", 
+            "@": ".--.-."
+        };
+        const textoPorMorse = Object.fromEntries(
+            Object.entries(morse).map(([caracter, codigo]) => [codigo, caracter])
+        );
+        const resultado = document.querySelector("#resultado");
+
+        function normalizarTexto(texto) {
+            return texto.replace(/[ñÑ]/g, "\uE000").normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/\uE000/g, "Ñ")
+                .replace(/\s+/g, " ").trim().toUpperCase();
+        }
+
+        function esMorse(entrada) {
+            return /^[.\s\-—]+$/.test(entrada) && /[.\-—]/.test(entrada);
+        }
+
+        function decodificar(entrada) {
+            const palabras = entrada.trim().replace(/[—–]/g, "-").split(/\s{2,}/);
+            return palabras.map((palabra) => palabra.trim().split(/\s+/).map((codigo) => {
+                const caracter = textoPorMorse[codigo];
+                if (!caracter) {
+                    throw new Error(`Código morse no reconocido: ${codigo}`);
+                }
+                return caracter;
+            }).join("")).join(" ");
+        }
+
+        function codificar(entrada) {
+            return normalizarTexto(entrada).split(" ").map((palabra) =>
+                [...palabra].map((caracter) => {
+                    const codigo = morse[caracter];
+                    if (!codigo) {
+                        throw new Error(`Carácter no soportado: ${caracter}`);
+                    }
+                    return codigo.replace(/-/g, "—");
+                }).join(" ")
+            ).join("  ");
+        }
+
+        document.querySelector("#convertir").addEventListener("click", () => {
+            const entrada = window.prompt("Introduce texto natural o código morse:");
+            if (entrada === null) {
+                resultado.textContent = "Conversión cancelada.";
+                return;
+            }
+            if (!entrada.trim()) {
+                resultado.textContent = "Introduce algún texto o código morse.";
+                return;
+            }
+
+            try {
+                const convertido = esMorse(entrada) ? decodificar(entrada) : codificar(entrada);
+                resultado.textContent = `Resultado: ${convertido}`;
+            } catch (error) {
+                resultado.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

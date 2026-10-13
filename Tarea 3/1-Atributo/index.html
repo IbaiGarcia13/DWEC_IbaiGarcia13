@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Atributo data-widget-name</title>
+</head>
+<body>
+    <h1>Lectura de un atributo data</h1>
+    <div id="widget" data-widget-name="menu">Widget de ejemplo</div>
+    <p id="resultado" aria-live="polite"></p>
+
+    <script>
+        const widget = document.querySelector("#widget");
+        const nombre = widget.getAttribute("data-widget-name");
+        document.querySelector("#resultado").textContent =
+            `El valor de data-widget-name es: ${nombre}`;
+        console.log(nombre);
+    </script>
+</body>
+</html>

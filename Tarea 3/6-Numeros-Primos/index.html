@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Números primos</title>
+    <style>
+        body { max-width: 48rem; margin: 2rem auto; padding: 0 1rem; font: 1rem/1.5 sans-serif; }
+        table { border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid #777; padding: 0.5rem 0.8rem; text-align: center; }
+        #resultado { overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Números primos</h1>
+    <form id="formulario">
+        <label for="limite">Introduce un número entero positivo:</label>
+        <input id="limite" name="limite" type="number" min="1" step="1" required>
+        <button type="submit">Mostrar tabla</button>
+    </form>
+    <div id="resultado" aria-live="polite"></div>
+
+    <script>
+        const formulario = document.querySelector("#formulario");
+        const limiteInput = document.querySelector("#limite");
+        const resultado = document.querySelector("#resultado");
+
+        function esPrimo(numero) {
+            if (numero < 2) return false;
+            for (let divisor = 2; divisor <= Math.sqrt(numero); divisor++) {
+                if (numero % divisor === 0) return false;
+            }
+            return true;
+        }
+
+        formulario.addEventListener("submit", (evento) => {
+            evento.preventDefault();
+            const limite = Number(limiteInput.value);
+            if (!Number.isSafeInteger(limite) || limite < 1) {
+                resultado.textContent = "Introduce un número entero positivo válido.";
+                return;
+            }
+
+            const numeros = [];
+            if (limite >= 1) numeros.push(1);
+            for (let numero = 2; numero <= limite; numero++) {
+                if (esPrimo(numero)) numeros.push(numero);
+            }
+
+            const tabla = document.createElement("table");
+            const caption = document.createElement("caption");
+            caption.textContent = `Resultado hasta ${limite} (el ejemplo incluye 1; 1 no es primo)`;
+            tabla.append(caption);
+            const cuerpo = tabla.createTBody();
+            const fila = cuerpo.insertRow();
+            numeros.forEach((numero) => {
+                const celda = fila.insertCell();
+                celda.textContent = numero;
+            });
+            resultado.replaceChildren(tabla);
+        });
+    </script>
+</body>
+</html>

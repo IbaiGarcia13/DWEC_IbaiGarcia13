@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clase externo</title>
+    <style>
+        .externo {
+            color: darkorange;
+        }
+
+        #informacion {
+            margin-top: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enlaces externos usando una clase</h1>
+    <ul>
+        <li><a href="http://google.com">http://google.com</a></li>
+        <li><a href="ftp://ftp.com/my.zip">ftp://ftp.com/my.zip</a></li>
+        <li><a href="http://nodejs.org">http://nodejs.org</a></li>
+        <li><a href="http://internal.com/test">http://internal.com/test</a></li>
+        <li><a href="pagina-local.html">Página local (interno)</a></li>
+        <li><a href="#informacion">Información (interno)</a></li>
+    </ul>
+    <section id="informacion">
+        <h2>Información</h2>
+        <p>JavaScript añade la clase <code>externo</code> a los enlaces externos. Como en el ejemplo, <code>http://internal.com/test</code> queda azul.</p>
+        <p>Los enlaces internos, como «Página local», no reciben la clase.</p>
+    </section>
+
+    <script>
+        document.querySelectorAll('a[href*="://"]').forEach((enlace) => {
+            const dominio = new URL(enlace.href).hostname;
+            if (dominio !== "internal.com") {
+                enlace.classList.add("externo");
+            }
+        });
+    </script>
+</body>
+</html>
